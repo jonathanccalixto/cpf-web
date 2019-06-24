@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 import { format } from "date-fns";
 
+import api from "../../service/api";
 import "./styles.css";
 
 const random = (min, max) => {
