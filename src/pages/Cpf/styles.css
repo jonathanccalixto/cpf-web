@@ -36,6 +36,10 @@
   padding: 0 20px;
 }
 
+#main-container form button.hidden {
+  display: none;
+}
+
 #main-container form button#status {
   background: #000080;
 }

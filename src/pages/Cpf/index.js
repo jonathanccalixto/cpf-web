@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import InputMask from "react-input-mask";
 
-import api from "../../service/api";
+import api from "../../services/api";
 import "./styles.css";
 
 export default class Cpf extends Component {
@@ -20,11 +20,18 @@ export default class Cpf extends Component {
 
   handleStatus = async event => {
     event.preventDefault();
-    const { cpf } = this.state;
 
-    const response = await api.get("/cpf/status", { cpf });
+    const cpf = this.state.cpf;
 
-    console.log(response.data);
+    if (!cpf) {
+      this.setState(state => ({ status: "" }));
+    }
+
+    const { data } = await api.get("/cpf/status", { params: { cpf } });
+
+    this.setState(state => ({
+      status: data.status
+    }));
   };
 
   handleAdd = event => {
@@ -50,7 +57,9 @@ export default class Cpf extends Component {
             maskChar="_"
             type="text"
             placeholder="Informe um CPF para realizar a consulta"
+            onMouseOver={this.handleInputChange}
             onChange={this.handleInputChange}
+            onBlur={this.handleInputChange}
             value={cpf}
           />
           <button id="status" onClick={this.handleStatus}>
@@ -59,14 +68,14 @@ export default class Cpf extends Component {
           <button
             id="add"
             onClick={this.handleAdd}
-            className={status != "FREE" ? "hidden" : ""}
+            className={status !== "FREE" ? "hidden" : ""}
           >
             Adicionar na blacklist
           </button>
           <button
             id="remove"
             onClick={this.handleRemove}
-            className={status != "BLOCK" ? "hidden" : ""}
+            className={status !== "BLOCK" ? "hidden" : ""}
           >
             Remover da blacklist
           </button>
