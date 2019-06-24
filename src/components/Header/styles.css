@@ -1,0 +1,33 @@
+header#main-header {
+  background: #fff;
+  height: 72px;
+  border-bottom: 1px solid #ddd;
+}
+
+header#main-header .header-content {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  height: 72px;
+  padding: 0 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header#main-header .header-content a {
+  color: #000080;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+header#main-header .header-content a:hover {
+  opacity: 0.8;
+}
+
+header#main-header .header-content img {
+  height: 70px;
+  margin: 1px;
+}
