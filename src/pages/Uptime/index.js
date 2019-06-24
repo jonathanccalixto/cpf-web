@@ -31,18 +31,17 @@ export default class Uptime extends Component {
     const count = random(1, 50);
 
     if (value > 20) {
-      this.setState(state => ({ startedAt: newDate(), ...state }));
+      this.setState(state => ({ startedAt: newDate() }));
     } else if (value > 10) {
-      this.setState(state => ({ queries: count, ...state }));
+      this.setState(state => ({ queries: count }));
     } else {
-      this.setState(state => ({ blacklists: count, ...state }));
+      this.setState(state => ({ blacklists: count }));
     }
   }
 
   render() {
-    console.log(this.state);
     const { startedAt, queries, blacklists } = this.state;
-    console.log({ startedAt, queries, blacklists });
+
     return (
       <div id="main-container">
         <div id="container">
