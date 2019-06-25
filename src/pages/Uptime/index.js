@@ -3,40 +3,40 @@ import React, { Component } from "react";
 import { format } from "date-fns";
 
 import api from "../../services/api";
+
 import "./styles.css";
 
-const random = (min, max) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+const newDate = date => {
+  if (!date) date = new Date();
+  return format(date, "DD/MM/YYYY [às] HH:mm:SS");
 };
-
-const newDate = () => format(new Date(), "DD/MM/YYYY [às] HH:mm:SS");
 
 export default class Uptime extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      startedAt: newDate(),
-      queries: random(1, 50),
-      blacklists: random(1, 50)
+      startedAt: "",
+      queries: "",
+      blacklists: ""
     };
 
     this.refreshHandle = this.refreshHandle.bind(this);
   }
 
-  refreshHandle() {
-    const value = random(0, 30);
-    const count = random(1, 50);
+  async refreshHandle() {
+    const { data } = await api.get("/status");
+    const { startedAt, queries, blacklists } = data;
 
-    if (value > 20) {
-      this.setState(state => ({ startedAt: newDate() }));
-    } else if (value > 10) {
-      this.setState(state => ({ queries: count }));
-    } else {
-      this.setState(state => ({ blacklists: count }));
-    }
+    this.setState(state => ({
+      startedAt: newDate(startedAt),
+      queries,
+      blacklists
+    }));
+  }
+
+  componentDidMount() {
+    this.refreshHandle();
   }
 
   render() {
