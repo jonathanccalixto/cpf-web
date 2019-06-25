@@ -2,48 +2,98 @@ import React, { Component } from "react";
 
 import InputMask from "react-input-mask";
 
+import Message from "../../components/Message";
+
 import api from "../../services/api";
 import "./styles.css";
 
 export default class Cpf extends Component {
   state = {
     cpf: "",
-    status: ""
+    status: "",
+    error: "",
+    success: ""
   };
 
   handleInputChange = event => {
     event.preventDefault();
     const cpf = event.target.value;
 
-    this.setState(state => ({ cpf }));
+    if (this.state.cpf === cpf) return;
+
+    this.setState(state => ({ cpf, status: "", error: "", success: "" }));
   };
 
   handleStatus = async event => {
     event.preventDefault();
 
-    const cpf = this.state.cpf;
+    const { cpf } = this.state;
+    let success = "";
+    let error = "";
+    let status = "";
 
-    if (!cpf) {
-      this.setState(state => ({ status: "" }));
+    try {
+      const { data } = await api.get("/cpf/status", { params: { cpf } });
+      status = data;
+
+      if (status === "FREE") {
+        success = "CPF não está na blacklist!";
+      } else if (status === "BLOCK") {
+        error = "CPF está na blacklist!";
+      }
+    } catch ({ response }) {
+      error = response.data;
     }
 
-    const { data } = await api.get("/cpf/status", { params: { cpf } });
-
-    this.setState(state => ({
-      status: data.status
-    }));
+    this.setState(state => ({ status, error, success }));
   };
 
-  handleAdd = event => {
+  handleAdd = async event => {
     event.preventDefault();
+
+    const { cpf } = this.state;
+    let { success, error, status } = this.state;
+
+    try {
+      const response = await api.post("/cpf/add", { cpf });
+
+      if (response.status === 201) {
+        status = "BLOCK";
+        error = "CPF está na blacklist!";
+        success = "";
+      }
+    } catch ({ response }) {
+      error = response.data;
+      success = "";
+    }
+
+    this.setState(state => ({ status, error, success }));
   };
 
-  handleRemove = event => {
+  handleRemove = async event => {
     event.preventDefault();
+
+    const { cpf } = this.state;
+    let { success, error, status } = this.state;
+
+    try {
+      const response = await api.delete("/cpf/remove", { params: { cpf } });
+
+      if (response.status === 200) {
+        status = "FREE";
+        error = "";
+        success = "CPF não está na blacklist!";
+      }
+    } catch ({ response }) {
+      error = response.data;
+      success = "";
+    }
+
+    this.setState(state => ({ status, error, success }));
   };
 
   render() {
-    const { cpf, status } = this.state;
+    const { cpf, status, error, success } = this.state;
 
     return (
       <div id="main-container">
@@ -52,19 +102,22 @@ export default class Cpf extends Component {
             event.preventDefault();
           }}
         >
+          {success ? <Message type="success" text={success} /> : ""}
+          {!success && error ? <Message type="error" text={error} /> : ""}
+
           <InputMask
             mask="999.999.999-99"
             maskChar="_"
             type="text"
             placeholder="Informe um CPF para realizar a consulta"
-            onMouseOver={this.handleInputChange}
             onChange={this.handleInputChange}
-            onBlur={this.handleInputChange}
             value={cpf}
           />
+
           <button id="status" onClick={this.handleStatus}>
             Consultar
           </button>
+
           <button
             id="add"
             onClick={this.handleAdd}
@@ -72,6 +125,7 @@ export default class Cpf extends Component {
           >
             Adicionar na blacklist
           </button>
+
           <button
             id="remove"
             onClick={this.handleRemove}

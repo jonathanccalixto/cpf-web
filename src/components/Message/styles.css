@@ -1,0 +1,13 @@
+span.message {
+  color: #bdbdbd;
+  font-size: 14px;
+  padding: 20px 20px 0 20px;
+  margin-bottom: -10px;
+}
+
+span#error {
+  color: #bd0000;
+}
+span#success {
+  color: #00bd00;
+}
