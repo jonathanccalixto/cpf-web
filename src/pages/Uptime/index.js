@@ -24,7 +24,12 @@ export default class Uptime extends Component {
     this.refreshHandle = this.refreshHandle.bind(this);
   }
 
-  async refreshHandle() {
+  async refreshHandle(event) {
+    event.preventDefault();
+    await this.refresh();
+  }
+
+  async refresh() {
     const { data } = await api.get("/status");
     const { startedAt, queries, blacklists } = data;
 
@@ -36,7 +41,7 @@ export default class Uptime extends Component {
   }
 
   componentDidMount() {
-    this.refreshHandle();
+    this.refresh();
   }
 
   render() {
